@@ -2,12 +2,52 @@ import numpy as np
 
 datadir = './data/'
 
+def demo():
+    '''
+    Load and plot a few CIB spectra.
+    '''
+
+    # define ell array.
+    l = np.arange(100,4000)
+
+    # get dictionary of CIBxCIB spectra.
+    cl_cibcib = get_cl_cibcib(l)
+
+    # plot
+    import matplotlib.pylab as pl
+    pl.ion()
+    lw=2
+    fs=18
+    leg = []
+    pl.clf()
+    for band in ['857','545','353']:
+        pl.semilogy(l, cl_cibcib['545',band],linewidth=lw)
+        leg.append('545 x '+band)
+    pl.xlabel(r'$\ell$',fontsize=fs)
+    pl.ylabel(r'$C_\ell^{TT, CIB} [\mu K^2]$',fontsize=fs)
+    pl.ylim(5e-2,6e3)
+    pl.legend(leg, fontsize=fs)
+
+    
+
 def get_cl_cibcib(l_interp):
     '''
     Returns the temperature spectra due to the CIB (clustered+shot)
-    for different Planck HFI bands.  Emailed from G. Lagache to RK.
-    More info:
+    for different Planck HFI bands.
 
+    INPUTS:
+    
+    L_INTERP - the ell array you want the results interpolated to.
+
+    OUTPUTS:
+
+    A dictionary of cross-spectra, C^{nu1 x nu2}, in (uK-CMB)**2.
+    The diciontary is keyed by the Planck frequencies in GHz.
+    E.g. output['353','545'] gives the C^{353x545} spectrum in (uK-CMB)**2.
+
+
+    Data emailed from G. Lagache to RK.  More info:
+    ---
     The measurements: there is one file per frequency.
     Note that the first two low-ell points have to be considered 
     as upper limits due to Galactic dust residuals.
@@ -19,6 +59,7 @@ def get_cl_cibcib(l_interp):
     conversion factor given in Table 6 of arXiv:1303.5070.
 
     The shot noise is not included in the model file.
+    ---
     '''
     from numpy import interp
     from pandas.io.parsers import read_csv
